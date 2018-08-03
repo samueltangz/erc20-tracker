@@ -2,6 +2,7 @@
   <v-layout wrap>
     <v-flex
       v-for="account in accounts"
+      v-if="symbol !== '' && decimals > 0"
       :key="account.address"
       xs6
       sm4
@@ -11,7 +12,8 @@
         <v-card-text>
           <qr-code
             :text="account.address"
-            :size="160" />
+            :size="160"
+            style='border: 5px solid white; width: 170px; height: 170px;' />
         </v-card-text>
         <v-card-text>
           <h3 class='title'>
@@ -24,7 +26,7 @@
         <v-divider />
         <v-card-actions>
           <v-icon>account_balance_wallet</v-icon>
-          {{ account.balance }} {{ symbol }}
+          {{ decimalize(account.balance) }} {{ symbol }}
           <v-spacer />
           <v-btn
             v-clipboard:copy='account.address'
@@ -56,11 +58,19 @@ export default {
     symbol: {
       type: String,
       required: true
+    },
+    decimals: {
+      type: Number,
+      required: true
     }
   },
   methods: {
     onCopy: (e) => {
       alert('Copied!')
+    },
+    decimalize: function (amount) {
+      const paddedAmount = '0'.repeat(Math.max(0, parseInt(this.decimals, 10) + 1 - amount.length)) + amount
+      return `${paddedAmount.slice(0, -this.decimals)}.${paddedAmount.slice(-this.decimals)}`
     }
   }
 }

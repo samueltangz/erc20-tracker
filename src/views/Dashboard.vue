@@ -10,16 +10,18 @@
     <hr>
     <accounts
       :accounts="accounts"
+      :decimals="decimals"
       :symbol="symbol" />
     <transactions
       :accounts="accounts"
-      :transactions="txHistory"
+      :transactions="transactions"
       :decimals="decimals"
       :symbol="symbol" />
   </div>
 </template>
 
 <script>
+import BigNumber from 'big-number'
 import Loading from '@/components/Loading.vue'
 import Accounts from '@/components/Accounts.vue'
 import Transactions from '@/components/Transactions.vue'
@@ -264,32 +266,44 @@ export default {
       isAccountsLoaded: false,
       isTransactionsLoaded: false,
 
-      tokenName: undefined,
-      symbol: undefined,
+      tokenName: '',
+      symbol: '',
       decimals: 0,
+
+      lastBlock: 0,
 
       accounts: [{
         name: 'Alan',
-        address: '0x102ee29eD6Abd17A5507B094fb9666111cAac6E4'
+        address: '0x102ee29eD6Abd17A5507B094fb9666111cAac6E4',
+        balance: '0',
+        recentBalance: '0'
       }, {
         name: 'Edwin',
-        address: '0xC213b811049881b9FFe1904A7325085067690045'
+        address: '0xC213b811049881b9FFe1904A7325085067690045',
+        balance: '0',
+        recentBalance: '0'
       }, {
         name: 'Harry',
-        address: '0x19e264d91b08A746851AC47D92B0dc1061A24897'
+        address: '0x19e264d91b08A746851AC47D92B0dc1061A24897',
+        balance: '0',
+        recentBalance: '0'
       }, {
         name: 'Phoebe',
-        address: '0xDFCAff68Cbdb997702BB1FaaE5a72D0E783228C7'
+        address: '0xDFCAff68Cbdb997702BB1FaaE5a72D0E783228C7',
+        balance: '0',
+        recentBalance: '0'
       }, {
         name: 'Samuel',
-        address: '0xBCe00FD336be3be338458e93EfC80Da14f8a3e05'
+        address: '0xBCe00FD336be3be338458e93EfC80Da14f8a3e05',
+        balance: '0',
+        recentBalance: '0'
       }],
-      txHistory: []
+      transactions: []
     }
   },
   computed: {
     loadingMessage: function () {
-      if (this.tokenName === undefined || this.symbol === undefined || this.decimals === 0) {
+      if (this.tokenName === '' || this.symbol === 'undefined' || this.decimals === 0) {
         return 'Retrieving basic information...'
       }
       if (this.isAccountsLoaded === false) {
@@ -302,17 +316,19 @@ export default {
   },
   methods: {
     init: async function () {
-      [this.tokenName, this.symbol, this.decimals] = await Promise.all([
+      const [tokenName, symbol, decimals] = await Promise.all([
         myContractInstance.methods.name().call(),
         myContractInstance.methods.symbol().call(),
         myContractInstance.methods.decimals().call()
       ])
+      this.tokenName = tokenName
+      this.symbol = symbol
+      this.decimals = parseInt(decimals, 10)
 
       this.pollBalances()
-      setInterval(this.pollBalances, 10000)
-
+      setInterval(this.pollBalances, 3600 * 1000)
       this.pollHistory()
-      setInterval(this.pollHistory, 10000)
+      setInterval(this.pollHistory, 5 * 1000)
     },
     pollBalances: async function () {
       const accounts = this.accounts
@@ -325,21 +341,29 @@ export default {
       this.isAccountsLoaded = true
     },
     pollHistory: async function () {
-      this.txHistory = await myContractInstance.getPastEvents('Transfer', {
-        fromBlock: 0,
+      const newTransactions = await myContractInstance.getPastEvents('Transfer', {
+        fromBlock: this.lastBlock,
         toBlock: 'latest'
       })
-      this.txHistory.reverse()
+      if (newTransactions.length > 0) {
+        const lastIndex = newTransactions.length - 1
+        newTransactions.forEach(transaction => {
+          this.transactions.push(transaction)
+          if (this.lastBlock === 0) return
+          const fromIndex = this.accounts.findIndex(account => account.address === transaction.returnValues.from)
+          const toIndex = this.accounts.findIndex(account => account.address === transaction.returnValues.to)
+          const amount = BigNumber(transaction.returnValues.value)
+          if (fromIndex > -1) this.accounts[fromIndex].balance = BigNumber(this.accounts[fromIndex].balance).minus(amount).toString()
+          if (toIndex > -1) this.accounts[toIndex].balance = BigNumber(this.accounts[toIndex].balance).plus(amount).toString()
+        })
+        this.lastBlock = newTransactions[lastIndex].blockNumber + 1
+        this.accounts = Object.assign([], this.accounts)
+      }
       this.isTransactionsLoaded = true
     },
 
     getBalance: async function (address) {
-      const balance = await myContractInstance.methods.balanceOf(address).call()
-      return this.decimalize(balance)
-    },
-    decimalize: function (amount) {
-      const paddedAmount = '0'.repeat(Math.max(0, parseInt(this.decimals, 10) + 1 - amount.length)) + amount
-      return `${paddedAmount.slice(0, -this.decimals)}.${paddedAmount.slice(-this.decimals)}`
+      return myContractInstance.methods.balanceOf(address).call()
     }
   },
   mounted () {

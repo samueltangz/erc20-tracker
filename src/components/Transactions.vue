@@ -41,7 +41,7 @@ export default {
         value: 'blockNumber'
       }, {
         text: '...',
-        sortable: false,
+        sortable: false
       }, {
         text: 'Value',
         sortable: false,
