@@ -20,8 +20,6 @@
 </template>
 
 <script>
-import QrCode from 'vue-qrcode-component'
-
 import Loading from '@/components/Loading.vue'
 import Accounts from '@/components/Accounts.vue'
 import Transactions from '@/components/Transactions.vue'

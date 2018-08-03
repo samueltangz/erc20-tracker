@@ -2,6 +2,7 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import Vuetify from 'vuetify'
+import VueClipboard from 'vue-clipboard2'
 import colors from 'vuetify/es5/util/colors'
 
 import App from '@/App.vue'
@@ -19,6 +20,7 @@ Vue.use(Vuetify, {
     success: colors.green.accent4
   }
 })
+Vue.use(VueClipboard)
 Vue.config.productionTip = false
 
 /* eslint-disable no-new */
