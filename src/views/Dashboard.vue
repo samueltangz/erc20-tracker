@@ -1,55 +1,30 @@
 <template>
-  <div class='hello'>
+  <div>
+    <loading
+      :value="!isAccountsLoaded || !isTransactionsLoaded"
+      progressColor='blue'
+      message='Loading token' />
     <div v-if="tokenName">
       Token Name: {{ tokenName }}
     </div>
     <hr>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Address</th>
-          <th>Balance</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="account in accounts"
-          v-if="account.balance"
-          :key="account.address">
-          <td>{{ account.name }}</td>
-          <td><qr-code :text="account.address" :size="80" /></td>
-          <td>{{ account.balance }} {{ symbol }}</td>
-        </tr>
-      </tbody>
-    </table>
-    <hr>
-    <table>
-      <thead>
-        <tr>
-          <th>Block</th>
-          <th>From</th>
-          <th>To</th>
-          <th>Amount</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="tx in txHistory"
-          :key="tx.transactionHash">
-          <!-- <td><xmp>{{ tx }}</xmp></td> -->
-          <td>#{{ tx.blockNumber }} </td>
-          <td>{{ addressToName(tx.returnValues.from) }}</td>
-          <td>{{ addressToName(tx.returnValues.to) }}</td>
-          <td>{{ decimalize(tx.returnValues.value) }} {{ symbol }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <accounts
+      :accounts="accounts"
+      :symbol="symbol" />
+    <transactions
+      :accounts="accounts"
+      :transactions="txHistory"
+      :decimals="decimals"
+      :symbol="symbol" />
   </div>
 </template>
 
 <script>
 import QrCode from 'vue-qrcode-component'
+
+import Loading from '@/components/Loading.vue'
+import Accounts from '@/components/Accounts.vue'
+import Transactions from '@/components/Transactions.vue'
 
 const Web3 = require('web3')
 const web3 = new Web3('https://ropsten.infura.io/v3/5ec3643e4f6e4773931bd99c932598fb')
@@ -232,20 +207,20 @@ const jsonInterface = [
     type: 'fallback'
   },
   {
-    'anonymous': false,
+    anonymous: false,
     inputs: [
       {
-        'indexed': true,
+        indexed: true,
         name: 'owner',
         type: 'address'
       },
       {
-        'indexed': true,
+        indexed: true,
         name: 'spender',
         type: 'address'
       },
       {
-        'indexed': false,
+        indexed: false,
         name: 'value',
         type: 'uint256'
       }
@@ -254,20 +229,20 @@ const jsonInterface = [
     type: 'event'
   },
   {
-    'anonymous': false,
+    anonymous: false,
     inputs: [
       {
-        'indexed': true,
+        indexed: true,
         name: 'from',
         type: 'address'
       },
       {
-        'indexed': true,
+        indexed: true,
         name: 'to',
         type: 'address'
       },
       {
-        'indexed': false,
+        indexed: false,
         name: 'value',
         type: 'uint256'
       }
@@ -282,12 +257,17 @@ const myContractInstance = new web3.eth.Contract(jsonInterface, '0x6144278a25682
 export default {
   name: 'HelloWorld',
   components: {
-    QrCode
+    Loading,
+    Accounts,
+    Transactions
   },
   data () {
     return {
-      tokenName: undefined,
-      symbol: undefined,
+      isAccountsLoaded: false,
+      isTransactionsLoaded: false,
+
+      tokenName: '?',
+      symbol: '?',
       decimals: 0,
 
       accounts: [{
@@ -299,6 +279,9 @@ export default {
       }, {
         name: 'Harry',
         address: '0x19e264d91b08A746851AC47D92B0dc1061A24897'
+      }, {
+        name: 'Phoebe',
+        address: '0xDFCAff68Cbdb997702BB1FaaE5a72D0E783228C7'
       }, {
         name: 'Samuel',
         address: '0xBCe00FD336be3be338458e93EfC80Da14f8a3e05'
@@ -328,6 +311,7 @@ export default {
         accounts[index].balance = balance
       })
       this.accounts = Object.assign([], accounts)
+      this.isAccountsLoaded = true
     },
     pollHistory: async function () {
       this.txHistory = await myContractInstance.getPastEvents('Transfer', {
@@ -335,6 +319,7 @@ export default {
         toBlock: 'latest'
       })
       this.txHistory.reverse()
+      this.isTransactionsLoaded = true
     },
 
     getBalance: async function (address) {
@@ -344,11 +329,6 @@ export default {
     decimalize: function (amount) {
       const paddedAmount = '0'.repeat(Math.max(0, parseInt(this.decimals, 10) + 1 - amount.length)) + amount
       return `${paddedAmount.slice(0, -this.decimals)}.${paddedAmount.slice(-this.decimals)}`
-    },
-    addressToName: function (address) {
-      const account = this.accounts.find(account => account.address === address)
-      if (account === undefined) return 'Unknown'
-      return account.name
     }
   },
   mounted () {
@@ -356,20 +336,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
-}
-</style>

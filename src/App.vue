@@ -1,7 +1,35 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <v-app
+    id="app"
+    dark>
+    <v-toolbar
+      app
+      fixed>
+      <v-toolbar-title>
+        ERC20 Token Tracker
+      </v-toolbar-title>
+      <v-spacer />
+      <v-btn
+        icon
+        dark>
+        <v-icon>settings</v-icon>
+      </v-btn>
+    </v-toolbar>
+
+    <v-content>
+      <v-container>
+        <router-view />
+      </v-container>
+    </v-content>
+    <v-footer
+      app
+      fixed
+      class="pa-3">
+      <v-spacer />
+      <span>Created by Samuel with &hearts; 2018</span>
+    </v-footer>
+
+  </v-app>
 </template>
 
 <script>
@@ -9,13 +37,3 @@ export default {
   name: 'App'
 }
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
