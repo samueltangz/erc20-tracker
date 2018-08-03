@@ -318,6 +318,7 @@ export default {
       setInterval(this.pollBalances, 10000)
 
       this.pollHistory()
+      setInterval(this.pollHistory, 10000)
     },
     pollBalances: async function () {
       const accounts = this.accounts
