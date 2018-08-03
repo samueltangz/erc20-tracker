@@ -3,7 +3,7 @@
     <loading
       :value="!isAccountsLoaded || !isTransactionsLoaded"
       progressColor='blue'
-      message='Loading token' />
+      :message='loadingMessage' />
     <div v-if="tokenName">
       Token Name: {{ tokenName }}
     </div>
@@ -264,8 +264,8 @@ export default {
       isAccountsLoaded: false,
       isTransactionsLoaded: false,
 
-      tokenName: '?',
-      symbol: '?',
+      tokenName: undefined,
+      symbol: undefined,
       decimals: 0,
 
       accounts: [{
@@ -285,6 +285,19 @@ export default {
         address: '0xBCe00FD336be3be338458e93EfC80Da14f8a3e05'
       }],
       txHistory: []
+    }
+  },
+  computed: {
+    loadingMessage: function () {
+      if (this.tokenName === undefined || this.symbol === undefined || this.decimals === 0) {
+        return 'Retrieving basic information...'
+      }
+      if (this.isAccountsLoaded === false) {
+        return 'Retrieving accounts...'
+      }
+      if (this.isTransactionsLoaded === false) {
+        return 'Retrieving transactions...'
+      }
     }
   },
   methods: {

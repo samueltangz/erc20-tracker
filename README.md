@@ -1,6 +1,6 @@
 # erc20-tracker
 
-> Tracks where an ERC20 token goes in a party
+> A Dapp that tracks where an ERC20 token goes in a party
 
 ## Build Setup
 

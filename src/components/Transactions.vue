@@ -6,8 +6,21 @@
     class='elevation-3'>
     <template slot='items' slot-scope='props'>
       <td>#{{ props.item.blockNumber }} </td>
-      <td>{{ addressToName(props.item.returnValues.from) }}</td>
-      <td>{{ addressToName(props.item.returnValues.to) }}</td>
+      <td>
+        <v-chip>
+          <v-avatar>
+            <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="trevor">
+          </v-avatar>
+          {{ addressToName(props.item.returnValues.from) }}
+        </v-chip>
+        <v-icon>keyboard_arrow_right</v-icon>
+        <v-chip>
+          <v-avatar>
+            <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="trevor">
+          </v-avatar>
+          {{ addressToName(props.item.returnValues.to) }}
+        </v-chip>
+      </td>
       <td>{{ decimalize(props.item.returnValues.value) }} {{ symbol }}</td>
     </template>
     <template slot='no-data'>
@@ -27,13 +40,8 @@ export default {
         sortable: false,
         value: 'blockNumber'
       }, {
-        text: 'From',
+        text: '...',
         sortable: false,
-        value: 'returnValues.from'
-      }, {
-        text: 'To',
-        sortable: false,
-        value: 'returnValues.to'
       }, {
         text: 'Value',
         sortable: false,
@@ -66,7 +74,7 @@ export default {
     },
     addressToName: function (address) {
       const account = this.accounts.find(account => account.address === address)
-      if (account === undefined) return 'Unknown'
+      if (account === undefined) return `Unknown`
       return account.name
     }
   }

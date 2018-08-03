@@ -3,7 +3,9 @@
     <v-flex
       v-for="account in accounts"
       :key="account.address"
-      xs4
+      xs6
+      sm4
+      md3
       pa-2>
       <v-card raised>
         <v-card-text>
