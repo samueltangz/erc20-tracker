@@ -13,7 +13,7 @@
           <qr-code
             :text="account.address"
             :size="160"
-            style='border: 5px solid white; width: 170px; height: 170px;' />
+            style='border: 5px solid white; width: 170px; height: 170px; margin: 0 auto;' />
         </v-card-text>
         <v-card-text>
           <h3 class='title'>
@@ -28,14 +28,18 @@
           <v-icon>account_balance_wallet</v-icon>
           {{ decimalize(account.balance) }} {{ symbol }}
           <v-spacer />
-          <v-btn
-            v-clipboard:copy='account.address'
-            v-clipboard:success='onCopy'
-            icon
-            flat
-            color='blue'>
-            <v-icon>file_copy</v-icon>
-          </v-btn>
+          <v-tooltip top>
+            <v-btn
+              v-clipboard:copy='account.address'
+              v-clipboard:success='onCopy'
+              slot='activator'
+              icon
+              flat
+              color='blue'>
+              <v-icon>file_copy</v-icon>
+            </v-btn>
+            <span>Copy address</span>
+          </v-tooltip>
         </v-card-actions>
       </v-card>
     </v-flex>
