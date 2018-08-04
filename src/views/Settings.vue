@@ -13,22 +13,43 @@
     </v-breadcrumbs>
 
     <ul>
-      <li>Network + Contract address?</li>
-      <li>Accounts</li>
+      <li>Network: {{ network }}</li>
+      <li>Contract address: {{ contractAddress }}</li>
+      <li>Accounts: {{ accounts }}</li>
+      <hr>
+      <li>
+        Support operations:
+        <ol>
+          <li>Update network</li>
+          <li>Update contract address</li>
+          <li>Create new account</li>
+          <li>Update account (name, address, order)</li>
+          <li>Delete account</li>
+        </ol>
+      </li>
     </ul>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'Settings',
   data () {
     return {
       network: undefined,
-      contractAddress: undefined,
-
-      accounts: []
+      contractAddress: undefined
     }
+  },
+  mounted () {
+    this.contractAddress = localStorage.getItem('contractAddress')
+    this.network = localStorage.getItem('network')
+  },
+  computed: {
+    ...mapGetters('account', [
+      'accounts'
+    ])
   }
 }
 </script>

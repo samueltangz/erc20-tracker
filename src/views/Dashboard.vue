@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import BigNumber from 'big-number'
 import Web3 from 'web3'
 import { mapGetters } from 'vuex'
 
@@ -118,7 +117,7 @@ export default {
         newTransactions.forEach(transaction => {
           this.transactions.push(transaction)
           if (this.lastBlock === 0) return
-          const amount = BigNumber(transaction.returnValues.value)
+          const amount = transaction.returnValues.value
           store.commit('account/subtractBalance', {
             address: transaction.returnValues.from,
             amount
