@@ -1,5 +1,12 @@
 <template>
   <div>
+    <v-breadcrumbs>
+      <v-icon slot="divider">chevron_right</v-icon>
+      <v-breadcrumbs-item>
+        Dashboard
+      </v-breadcrumbs-item>
+    </v-breadcrumbs>
+
     <loading
       :value="!isAccountsLoaded || !isTransactionsLoaded"
       progressColor='blue'
@@ -22,240 +29,20 @@
 
 <script>
 import BigNumber from 'big-number'
+import Web3 from 'web3'
 import Loading from '@/components/Loading.vue'
 import Accounts from '@/components/Accounts.vue'
 import Transactions from '@/components/Transactions.vue'
+import { jsonInterface } from '@/utils/web3.js'
 
-const Web3 = require('web3')
-const web3 = new Web3('https://ropsten.infura.io/v3/5ec3643e4f6e4773931bd99c932598fb')
+const contractAddress = localStorage.getItem('contractAddress')
+const network = localStorage.getItem('network')
 
-const jsonInterface = [
-  {
-    constant: true,
-    inputs: [],
-    name: 'name',
-    outputs: [
-      {
-        name: '',
-        type: 'string'
-      }
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        name: '_spender',
-        type: 'address'
-      },
-      {
-        name: '_value',
-        type: 'uint256'
-      }
-    ],
-    name: 'approve',
-    outputs: [
-      {
-        name: '',
-        type: 'bool'
-      }
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: 'totalSupply',
-    outputs: [
-      {
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        name: '_from',
-        type: 'address'
-      },
-      {
-        name: '_to',
-        type: 'address'
-      },
-      {
-        name: '_value',
-        type: 'uint256'
-      }
-    ],
-    name: 'transferFrom',
-    outputs: [
-      {
-        name: '',
-        type: 'bool'
-      }
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: 'decimals',
-    outputs: [
-      {
-        name: '',
-        type: 'uint8'
-      }
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    constant: true,
-    inputs: [
-      {
-        name: '_owner',
-        type: 'address'
-      }
-    ],
-    name: 'balanceOf',
-    outputs: [
-      {
-        name: 'balance',
-        type: 'uint256'
-      }
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    constant: true,
-    inputs: [],
-    name: 'symbol',
-    outputs: [
-      {
-        name: '',
-        type: 'string'
-      }
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    constant: false,
-    inputs: [
-      {
-        name: '_to',
-        type: 'address'
-      },
-      {
-        name: '_value',
-        type: 'uint256'
-      }
-    ],
-    name: 'transfer',
-    outputs: [
-      {
-        name: '',
-        type: 'bool'
-      }
-    ],
-    payable: false,
-    stateMutability: 'nonpayable',
-    type: 'function'
-  },
-  {
-    constant: true,
-    inputs: [
-      {
-        name: '_owner',
-        type: 'address'
-      },
-      {
-        name: '_spender',
-        type: 'address'
-      }
-    ],
-    name: 'allowance',
-    outputs: [
-      {
-        name: '',
-        type: 'uint256'
-      }
-    ],
-    payable: false,
-    stateMutability: 'view',
-    type: 'function'
-  },
-  {
-    payable: true,
-    stateMutability: 'payable',
-    type: 'fallback'
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        name: 'owner',
-        type: 'address'
-      },
-      {
-        indexed: true,
-        name: 'spender',
-        type: 'address'
-      },
-      {
-        indexed: false,
-        name: 'value',
-        type: 'uint256'
-      }
-    ],
-    name: 'Approval',
-    type: 'event'
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        name: 'from',
-        type: 'address'
-      },
-      {
-        indexed: true,
-        name: 'to',
-        type: 'address'
-      },
-      {
-        indexed: false,
-        name: 'value',
-        type: 'uint256'
-      }
-    ],
-    name: 'Transfer',
-    type: 'event'
-  }
-]
-
-const myContractInstance = new web3.eth.Contract(jsonInterface, '0x6144278a2568265eb396fe77fca9a2ce91036043')
+const web3 = new Web3(`https://${network}.infura.io/v3/5ec3643e4f6e4773931bd99c932598fb`)
+const myContractInstance = new web3.eth.Contract(jsonInterface, contractAddress)
 
 export default {
-  name: 'HelloWorld',
+  name: 'Dashboard',
   components: {
     Loading,
     Accounts,
@@ -270,33 +57,10 @@ export default {
       symbol: '',
       decimals: 0,
 
+      pollingFnIds: [],
       lastBlock: 0,
 
-      accounts: [{
-        name: 'Alan',
-        address: '0x102ee29eD6Abd17A5507B094fb9666111cAac6E4',
-        balance: '0'
-      }, {
-        name: 'Edwin',
-        address: '0xC213b811049881b9FFe1904A7325085067690045',
-        balance: '0'
-      }, {
-        name: 'Harry',
-        address: '0x19e264d91b08A746851AC47D92B0dc1061A24897',
-        balance: '0'
-      }, {
-        name: 'Phoebe',
-        address: '0xDFCAff68Cbdb997702BB1FaaE5a72D0E783228C7',
-        balance: '0'
-      }, {
-        name: 'Samuel',
-        address: '0xBCe00FD336be3be338458e93EfC80Da14f8a3e05',
-        balance: '0'
-      }, {
-        name: 'Zetta',
-        address: '0x0000000000000000000000000000000000000000',
-        balance: '0'
-      }],
+      accounts: [],
       transactions: []
     }
   },
@@ -324,10 +88,23 @@ export default {
       this.symbol = symbol
       this.decimals = parseInt(decimals, 10)
 
+      this.initAccounts()
       this.pollBalances()
-      setInterval(this.pollBalances, 3600 * 1000)
       this.pollHistory()
-      setInterval(this.pollHistory, 5 * 1000)
+      this.pollingFnIds.push(setInterval(this.pollBalances, 3600 * 1000))
+      this.pollingFnIds.push(setInterval(this.pollHistory, 5 * 1000))
+    },
+
+    initAccounts: function () {
+      this.accounts = JSON.parse(
+        localStorage.getItem('accounts')
+      ).map(account => {
+        return {
+          name: account.name,
+          address: account.address,
+          balance: '0'
+        }
+      })
     },
     pollBalances: async function () {
       const accounts = this.accounts
@@ -367,6 +144,9 @@ export default {
   },
   mounted () {
     this.init()
+  },
+  destroyed () {
+    this.pollingFnIds.forEach(clearInterval)
   }
 }
 </script>

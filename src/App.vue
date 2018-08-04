@@ -10,6 +10,8 @@
       </v-toolbar-title>
       <v-spacer />
       <v-btn
+        router
+        :to="{ name: 'Settings' }"
         icon
         dark>
         <v-icon>settings</v-icon>
