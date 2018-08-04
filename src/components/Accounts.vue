@@ -18,7 +18,7 @@
         <v-card-text>
           <h3 class='title'>
             <v-avatar size='36px'>
-              <img src='https://avatars0.githubusercontent.com/u/9064066?v=4&s=460'>
+              <img :src='account.avatarUrl'>
             </v-avatar>
             {{ account.name }}
           </h3>

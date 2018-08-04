@@ -9,14 +9,14 @@
       <td>
         <v-chip>
           <v-avatar>
-            <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="trevor">
+            <img :src="addressToAvatarUrl(props.item.returnValues.from)">
           </v-avatar>
           {{ addressToName(props.item.returnValues.from) }}
         </v-chip>
         <v-icon>keyboard_arrow_right</v-icon>
         <v-chip>
           <v-avatar>
-            <img src="https://randomuser.me/api/portraits/men/35.jpg" alt="trevor">
+            <img :src="addressToAvatarUrl(props.item.returnValues.to)">
           </v-avatar>
           {{ addressToName(props.item.returnValues.to) }}
         </v-chip>
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import md5 from 'js-md5'
+
 export default {
   name: 'Transactions',
   components: {},
@@ -76,6 +78,11 @@ export default {
       const account = this.accounts.find(account => account.address === address)
       if (account === undefined) return 'Unknown'
       return account.name
+    },
+    addressToAvatarUrl: function (address) {
+      const account = this.accounts.find(account => account.address === address)
+      if (account === undefined) return `http://www.gravatar.com/avatar/${md5(address)}?d=identicon`
+      return account.avatarUrl
     }
   }
 }

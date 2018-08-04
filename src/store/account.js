@@ -1,4 +1,5 @@
 import BigNumber from 'big-number'
+import md5 from 'js-md5'
 
 export default {
   namespaced: true,
@@ -13,6 +14,7 @@ export default {
           return {
             name: account.name,
             address: account.address,
+            avatarUrl: account.avatarUrl ? account.avatarUrl : `http://www.gravatar.com/avatar/${md5(account.address)}?d=identicon`,
             balance: state.balances[account.address]
           }
         }
