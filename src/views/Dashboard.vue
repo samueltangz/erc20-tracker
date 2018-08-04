@@ -6,6 +6,7 @@
         Dashboard
       </v-breadcrumbs-item>
     </v-breadcrumbs>
+
     <loading
       :value="!isAccountsLoaded || !isTransactionsLoaded"
       progressColor='blue'
@@ -35,6 +36,7 @@ import Loading from '@/components/Loading.vue'
 import Accounts from '@/components/Accounts.vue'
 import Transactions from '@/components/Transactions.vue'
 import { jsonInterface } from '@/utils/web3.js'
+import { getTimezonedDate } from '@/utils/time.js'
 
 const contractAddress = localStorage.getItem('contractAddress')
 const network = localStorage.getItem('network')
@@ -114,8 +116,19 @@ export default {
       })
       if (newTransactions.length > 0) {
         const lastIndex = newTransactions.length - 1
+        // Input new transactions
         newTransactions.forEach(transaction => {
-          this.transactions.push(transaction)
+          // Add to history
+          this.transactions.unshift({
+            blockNumber: transaction.blockNumber,
+            date: this.lastBlock > 0 ? getTimezonedDate() : undefined,
+            from: transaction.returnValues.from,
+            to: transaction.returnValues.to,
+            amount: transaction.returnValues.value
+          })
+          // Remove the oldest from history if there are more than 10 records
+          if (this.transactions.length > 10) this.transactions.pop()
+          // Update the balances using the record
           if (this.lastBlock === 0) return
           const amount = transaction.returnValues.value
           store.commit('account/subtractBalance', {
@@ -126,6 +139,12 @@ export default {
             address: transaction.returnValues.to,
             amount
           })
+        })
+        // Obtain the time when the transaction occurs
+        this.transactions.forEach(async transaction => {
+          if (transaction.date !== undefined) return
+          const block = await web3.eth.getBlock(transaction.blockNumber)
+          transaction.date = getTimezonedDate(block.timestamp * 1000)
         })
         this.lastBlock = newTransactions[lastIndex].blockNumber + 1
       }

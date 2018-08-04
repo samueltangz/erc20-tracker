@@ -5,23 +5,23 @@
     hide-actions
     class='elevation-3'>
     <template slot='items' slot-scope='props'>
-      <td>#{{ props.item.blockNumber }} </td>
+      <td>{{ props.item.date }} </td>
       <td>
         <v-chip>
           <v-avatar>
-            <img :src="addressToAvatarUrl(props.item.returnValues.from)">
+            <img :src="addressToAvatarUrl(props.item.from)">
           </v-avatar>
-          {{ addressToName(props.item.returnValues.from) }}
+          {{ addressToName(props.item.from) }}
         </v-chip>
-        <v-icon>keyboard_arrow_right</v-icon>
+        <v-icon>chevron_right</v-icon>
         <v-chip>
           <v-avatar>
-            <img :src="addressToAvatarUrl(props.item.returnValues.to)">
+            <img :src="addressToAvatarUrl(props.item.to)">
           </v-avatar>
-          {{ addressToName(props.item.returnValues.to) }}
+          {{ addressToName(props.item.to) }}
         </v-chip>
       </td>
-      <td>{{ decimalize(props.item.returnValues.value) }} {{ symbol }}</td>
+      <td>{{ decimalize(props.item.amount) }} {{ symbol }}</td>
     </template>
     <template slot='no-data'>
       There are no transactions yet.
@@ -38,11 +38,11 @@ export default {
   data () {
     return {
       headers: [{
-        text: 'Block number',
+        text: 'Date',
         sortable: false,
-        value: 'blockNumber'
+        value: 'date'
       }, {
-        text: '...',
+        text: 'Transaction',
         sortable: false
       }, {
         text: 'Value',
