@@ -275,28 +275,27 @@ export default {
       accounts: [{
         name: 'Alan',
         address: '0x102ee29eD6Abd17A5507B094fb9666111cAac6E4',
-        balance: '0',
-        recentBalance: '0'
+        balance: '0'
       }, {
         name: 'Edwin',
         address: '0xC213b811049881b9FFe1904A7325085067690045',
-        balance: '0',
-        recentBalance: '0'
+        balance: '0'
       }, {
         name: 'Harry',
         address: '0x19e264d91b08A746851AC47D92B0dc1061A24897',
-        balance: '0',
-        recentBalance: '0'
+        balance: '0'
       }, {
         name: 'Phoebe',
         address: '0xDFCAff68Cbdb997702BB1FaaE5a72D0E783228C7',
-        balance: '0',
-        recentBalance: '0'
+        balance: '0'
       }, {
         name: 'Samuel',
         address: '0xBCe00FD336be3be338458e93EfC80Da14f8a3e05',
-        balance: '0',
-        recentBalance: '0'
+        balance: '0'
+      }, {
+        name: 'Zetta',
+        address: '0x0000000000000000000000000000000000000000',
+        balance: '0'
       }],
       transactions: []
     }

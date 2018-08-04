@@ -74,7 +74,7 @@ export default {
     },
     addressToName: function (address) {
       const account = this.accounts.find(account => account.address === address)
-      if (account === undefined) return `Unknown`
+      if (account === undefined) return 'Unknown'
       return account.name
     }
   }
