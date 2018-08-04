@@ -59,7 +59,7 @@ export default {
       state.balances[address] = BigNumber(state.balances[address]).plus(BigNumber(amount)).toString()
       state.balances = Object.assign([], state.balances)
     },
-    subBalance: (state, payload) => {
+    subtractBalance: (state, payload) => {
       const { address, amount } = payload
       state.balances[address] = BigNumber(state.balances[address]).minus(BigNumber(amount)).toString()
       state.balances = Object.assign([], state.balances)
