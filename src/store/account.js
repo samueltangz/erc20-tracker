@@ -41,6 +41,13 @@ export default {
           }, {
             name: 'Samuel',
             address: '0xBCe00FD336be3be338458e93EfC80Da14f8a3e05'
+          }, {
+            name: 'Zetta',
+            address: '0x03129deAf06732076D1149c40A0743CAD679554d'
+          }, {
+            name: 'Byr(o:n',
+            address: '0x9Ce8744E16816d519227945D4dE610C45F364111',
+            avatarUrl: 'https://vxcon.hk/images/common/individual_sponsors/byronwai.png'
           }]
         ))
       }
@@ -56,12 +63,16 @@ export default {
     },
     addBalance: (state, payload) => {
       const { address, amount } = payload
-      state.balances[address] = BigNumber(state.balances[address]).plus(BigNumber(amount)).toString()
+      state.balances[address] = BigNumber(state.balances[address])
+        .plus(BigNumber(amount))
+        .toString()
       state.balances = Object.assign([], state.balances)
     },
     subtractBalance: (state, payload) => {
       const { address, amount } = payload
-      state.balances[address] = BigNumber(state.balances[address]).minus(BigNumber(amount)).toString()
+      state.balances[address] = BigNumber(state.balances[address])
+        .minus(BigNumber(amount))
+        .toString()
       state.balances = Object.assign([], state.balances)
     }
   },
